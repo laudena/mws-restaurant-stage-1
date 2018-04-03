@@ -39,6 +39,9 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 #maincontent {
   background-color: #f3f3f3;
   min-height: 100%;
+  display:flex;
+  flex-flow: wrap;
+
 }
 #footer {
   background-color: #444;
@@ -55,6 +58,7 @@ nav {
   height: 80px;
   background-color: #252831;
   text-align:center;
+  display: flex;
 }
 nav h1 {
   margin: auto;
@@ -65,6 +69,11 @@ nav h1 a {
   font-weight: 200;
   letter-spacing: 10px;
   text-transform: uppercase;
+}
+.logo{
+    display:none;
+    margin-top: 10px;
+
 }
 #breadcrumb {
     padding: 10px 40px 16px;
@@ -100,14 +109,23 @@ nav h1 a {
 }
 /* ====================== Map ====================== */
 #map {
-  height: 350px;
+  height: 100%;
   width: 100%;
   background-color: #ccc;
 }
+#map-container{
+    width:100%;
+    height: 350px;
+    min-height: 50vh
+}
 /* ====================== Restaurant Filtering ====================== */
+#filter-container{
+    width:100%
+}
 .filter-options {
   width: 100%;
-  height: 150px;;
+  height: 150px;
+
   background-color: #3397DB;
   align-items: center;
 }
@@ -128,17 +146,21 @@ nav h1 a {
   letter-spacing: 0;
   margin: 10px 10px;
   padding: 0 10px;
-  width: 200px;
+  width: 165px;
 }
 
 /* ====================== Restaurant Listing ====================== */
+#restaurant-list-container{
+    width:100%;
+}
 #restaurants-list {
   background-color: #f3f3f3;
   list-style: outside none none;
   //margin: 0;
   //padding: 30px 15px 60px;
   text-align: center;
-      width: 100%;
+  width: calc(0.9 * 100vw);
+  max-width: 1150px;    //max serviceable width = 1200px
 }
 #restaurants-list li {
   background-color: #fff;
@@ -147,7 +169,7 @@ nav h1 a {
       margin: 10px 0px 10px 0;
       min-height: 380px;
   text-align: left;
-  width: 80%;
+  width: 90%;
 
 }
 #restaurants-list .restaurant-img {
@@ -280,3 +302,43 @@ nav h1 a {
 #restaurant-hours td {
   color: #666;
 }
+
+
+@media screen and (min-width:374px){
+    .filter-options{
+      height: 100px;
+    }
+  }
+
+@media screen and (min-width:600px){
+    #filter-container{
+      width:190px;
+    }
+    .filter-options{
+      height: 350px;
+      min-height: 50vh
+    }
+    #map-container{
+      width: calc(100% - 190px)
+    }
+
+  }
+  @media screen and (min-width:650px){
+        .logo{
+            display: inline;
+        }
+        nav h1 {
+            margin-left: 25px;
+        }
+
+    }
+    @media screen and (min-width:1200px){
+          body{
+                width:1200px;
+                margin-right:auto;
+                margin-left:auto;
+
+          }
+      }
+
+
