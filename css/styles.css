@@ -304,12 +304,17 @@ nav h1 a {
 }
 
 
+
+/*breakpoints*/
+/*************/
+
+/*minor - allow to place both filters side by side*/
 @media screen and (min-width:374px){
     .filter-options{
       height: 100px;
     }
   }
-
+/* major - set filters next to map*/
 @media screen and (min-width:600px){
     #filter-container{
       width:190px;
@@ -323,22 +328,24 @@ nav h1 a {
     }
 
   }
-  @media screen and (min-width:650px){
-        .logo{
-            display: inline;
-        }
-        nav h1 {
-            margin-left: 25px;
-        }
-
+/*minor - add the logo */
+@media screen and (min-width:650px){
+    .logo{
+        display: inline;
     }
-    @media screen and (min-width:1200px){
-          body{
-                width:1200px;
-                margin-right:auto;
-                margin-left:auto;
+    nav h1 {
+        margin-left: 25px;
+    }
 
-          }
+}
+/*minor - set maximum width*/
+@media screen and (min-width:1200px){
+      body{
+            width:1200px;
+            margin-right:auto;
+            margin-left:auto;
+
       }
+  }
 
 
