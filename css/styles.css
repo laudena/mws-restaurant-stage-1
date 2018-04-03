@@ -11,6 +11,7 @@ body {
 	background-color: #fdfdfd;
 	margin: 0;
 	position:relative;
+	width:100%;
 }
 ul, li {
 	font-family: Arial, Helvetica, sans-serif;
@@ -99,7 +100,7 @@ nav h1 a {
 }
 /* ====================== Map ====================== */
 #map {
-  height: 400px;
+  height: 350px;
   width: 100%;
   background-color: #ccc;
 }
@@ -143,11 +144,11 @@ nav h1 a {
   background-color: #fff;
   border: 2px solid #ccc;
   font-family: Arial,sans-serif;
-//      margin: 0px 15px 5px 0px;
+      margin: 10px 0px 10px 0;
       min-height: 380px;
-//      padding: 10px 20px 25px 0;
   text-align: left;
-  //width: 270px;
+  width: 80%;
+
 }
 #restaurants-list .restaurant-img {
   background-color: #ccc;
@@ -172,6 +173,7 @@ nav h1 a {
 #restaurants-list p {
   margin: 0;
   font-size: 11pt;
+  padding: 0 0 0 20px;
 }
 #restaurants-list li a {
   background-color: orange;
