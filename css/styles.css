@@ -118,6 +118,11 @@ nav h1 a {
     height: 350px;
     min-height: 50vh
 }
+#map-container-2{
+    width:100%;
+    height: 350px;
+    min-height: 50vh
+}
 /* ====================== Restaurant Filtering ====================== */
 #filter-container{
     width:100%
@@ -233,7 +238,7 @@ nav h1 a {
 .inside #footer {
   bottom: 0;
   position: absolute;
-  width: 50%;
+  width: 100%;
 }
 #restaurant-name {
   color: #f18200;
@@ -246,11 +251,15 @@ nav h1 a {
   line-height: 1.1;
 }
 #restaurant-img {
-	width: 90%;
+	width: 100%;
 	margin:10px;
 }
+#restaurant-hours tr td {
+    font-size: 22pt;
+    margin: 10px 0px;
+}
 #restaurant-address {
-  font-size: 12pt;
+  font-size: 16pt;
   margin: 10px 0px;
 }
 #restaurant-cuisine {
@@ -263,13 +272,13 @@ nav h1 a {
   padding: 2px 0;
   text-align: center;
   text-transform: uppercase;
-	width: 90%;
+	width: 100%;
 }
 #restaurant-container, #reviews-container {
   border-bottom: 1px solid #d9d9d9;
   border-top: 1px solid #fff;
   padding: 140px 40px 30px;
-  width: 50%;
+  width: 100%;
 }
 #reviews-container {
   padding: 30px 40px 80px;
@@ -314,6 +323,16 @@ nav h1 a {
       height: 100px;
     }
   }
+
+@media screen and (min-width:350px) and (max-width: 850px){
+    #restaurant-container, #reviews-container{
+        width:100%;
+    }
+    #map-container-2{
+        width:100%
+    }
+
+}
 /* major - set filters next to map*/
 @media screen and (min-width:600px){
     #filter-container{
@@ -326,6 +345,12 @@ nav h1 a {
     #map-container{
       width: calc(100% - 190px)
     }
+    #restaurant-address{
+              font-size: 36px;
+        }
+     #reviews-list li p{
+        font-size: 22pt;
+     }
 
   }
 /*minor - add the logo */
@@ -338,6 +363,22 @@ nav h1 a {
     }
 
 }
+
+
+@media screen and (min-width:851) and (max-width:1853px){
+    #restaurant-container{
+        width:100%;
+    }
+
+    #reviews-container{
+        width:100%;
+    }
+    #map-container-2{
+        width:50%
+    }
+
+}
+
 /*minor - set maximum width*/
 @media screen and (min-width:1200px){
       body{
@@ -346,6 +387,11 @@ nav h1 a {
             margin-left:auto;
 
       }
+       #restaurant-address{
+                font-size: 45px;
+          }
+          #reviews-list li p{
+                  font-size: 22pt;
+               }
   }
-
 
