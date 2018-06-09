@@ -147,11 +147,18 @@ class DBHelper {
   }
 
   /**
-   * Restaurant image URL.
-   */
-  static imageUrlForRestaurant(restaurant) {
+     * Restaurant image URL.
+     */
+    static imageUrlForRestaurant(restaurant) {
 
-    return (`/img/${restaurant.photograph}`);
+      return (`/img/${restaurant.photograph}`);
+    }
+/**
+   * Restaurant image description.
+   */
+  static imageDescriptionForRestaurant(restaurant) {
+
+    return (`${restaurant.photographDescription}`);
   }
   /**
    * Restaurant SOURCE SET.
@@ -164,6 +171,7 @@ class DBHelper {
         else
             return (`/img/final/${imageNameNoPrefix}-400_small_1x.jpg 1x, /img/final/${imageNameNoPrefix}-400_small_2x.jpg 2x`);
    }
+
   /**
    * Map marker for a restaurant.
    */
