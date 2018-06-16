@@ -40,10 +40,20 @@
     </section>
   </main>
 
-  <script type="application/javascript" charset="utf-8" src="js/sw/index.js"></script>
+  <!--<script type="application/javascript" charset="utf-8" src="js/sw/index.js"></script>-->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('js/sw/index.js').then(function (registration) {
+          console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        }, function (err) {
+          console.log('ServiceWorker registration failed: ', err);
+        });
+      });
+    }
+  </script>
   <script type="application/javascript" charset="utf-8" src="js/dbhelper.js"></script>
   <script type="application/javascript" charset="utf-8" src="js/main.js"></script>
-  <script type="application/javascript" charset="utf-8" src="js/IndexController.js"></script>
 
 
 
