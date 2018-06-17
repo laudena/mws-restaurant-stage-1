@@ -1,6 +1,8 @@
-To activate the server, please use the command: **node /server/http.js**
+
+##For the server, please use: **node /server/http.js**
 `Arnon Lauden`
 
+---
 
 
 # Mobile Web Specialist Certification Course
