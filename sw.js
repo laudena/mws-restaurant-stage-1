@@ -1,4 +1,4 @@
-var staticCacheName = 'rest-static-v3';
+var staticCacheName = 'rest-static-v5';
 var contentImgsCache = 'rest-content-imgs';
 var allCaches = [
   staticCacheName,
@@ -15,6 +15,9 @@ self.addEventListener('install', function(event) {
         '/css/styles.css',
         '/index.html',
         '/restaurant.html',
+        '/data/restaurants.json',
+
+
       ]);
     })
   );
@@ -43,6 +46,10 @@ self.addEventListener('fetch', function(event) {
           event.respondWith(servePhoto(event.request));
           return;
         }
+    if (requestUrl.pathname.startsWith('/restaurant.html') && requestUrl.search.startsWith('?id=')) {
+              event.respondWith(serveRestaurantPage(event.request));
+              return;
+            }
     if (requestUrl.pathname === '/') {
       event.respondWith(caches.match('/'));
       return;
@@ -68,7 +75,22 @@ function servePhoto(request) {
 
       return fetch(request).then(function(networkResponse) {
         cache.put(storageUrl, networkResponse.clone());
-        return networkResponse;
+        return networkResponse ;
+      });
+    });
+  });
+}
+
+function serveRestaurantPage(request) {
+  var storageUrl = request.url;
+
+  return caches.open(staticCacheName).then(function(cache) {
+    return cache.match(storageUrl).then(function(response) {
+      if (response) return response;
+
+      return fetch(request).then(function(networkResponse) {
+        cache.put(storageUrl, networkResponse.clone());
+        return networkResponse || '<h2>Sorry, no cached data...</h2>';
       });
     });
   });
