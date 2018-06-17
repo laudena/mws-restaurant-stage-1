@@ -1,6 +1,4 @@
-
-##For the server, please use: **node /server/http.js**
-`Arnon Lauden`
+## For the server, please use: ***node /server/http.js*** `Arnon Lauden`
 
 ---
 
