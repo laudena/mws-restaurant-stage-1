@@ -1,3 +1,8 @@
+To activate the server, please use the command: **node /server/http.js**
+`Arnon Lauden`
+
+
+
 # Mobile Web Specialist Certification Course
 ---
 #### _Three Stage Course Material Project - Restaurant Reviews_
