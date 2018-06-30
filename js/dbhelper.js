@@ -1,3 +1,17 @@
+//import idb from 'idb';
+
+
+const dbPromise = idb.open('store', 1, upgradeDB => {
+  // Note: we don't use 'break' in this switch statement,
+  // the fall-through behaviour is what we want.
+  switch (upgradeDB.oldVersion) {
+    case 0:
+      upgradeDB.createObjectStore('obj', {keyPath: 'id'});
+      
+  }
+});
+
+
 /**
  * Common database helper functions.
  */
@@ -8,8 +22,6 @@ class DBHelper {
    * Change this to restaurants.json file location on your server.
    */
   static get DATABASE_URL() {
-
-    //15:04
     const port = 1337 // Change this to your server port
     return `http://localhost:${port}/restaurants`;
   }
@@ -19,11 +31,43 @@ class DBHelper {
    */
   static fetchRestaurants(callback) {
     fetch(DBHelper.DATABASE_URL,{method:'GET'})
-      .then(response=>response.json()
-        .then(callback))
-      .catch(e => callback('fetchRestaurants Request failed.'));
+      .then(function(response) { 
+        console.log ('response:' + response);
+        return response.json(); 
+      })
+      .then(function(myJson) { 
+        console.log ('myJson' + myJson);
+        DBHelper.addRestaurantRecordsToDB(myJson);
+        return myJson;
+      })
+      .then(callback)
+      .catch(function (e) {
+        console.log ('failed to download. attempting indexDB...' + e);
+        dbPromise.then(db => {
+          return db.transaction('obj')
+              .objectStore('obj').get(1);
+          })
+            .then(function(obj) {
+            console.log('received from DB: ' + obj);
+            return obj.data;
+            })
+            .then(callback);
+        
+        });
+      
   }
  
+ static addRestaurantRecordsToDB(obj){
+  dbPromise.then(db => {
+  const tx = db.transaction('obj', 'readwrite');
+  tx.objectStore('obj').put({
+    id: 1,
+    data: obj
+  });
+  return tx.complete;
+});
+
+ }
   /**
    * Fetch a restaurant by its ID.
    */
