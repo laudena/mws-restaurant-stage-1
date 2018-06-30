@@ -1,4 +1,4 @@
-var staticCacheName = 'rest-static-v5';
+var staticCacheName = 'rest-static-v6';
 var contentImgsCache = 'rest-content-imgs';
 var allCaches = [
   staticCacheName,
@@ -15,9 +15,8 @@ self.addEventListener('install', function(event) {
         '/css/styles.css',
         '/index.html',
         '/restaurant.html',
-        '/data/restaurants.json',
-
-
+        //'/data/restaurants.json',
+        'http://localhost:1337/restaurants'
       ]);
     })
   );

@@ -8,43 +8,36 @@ class DBHelper {
    * Change this to restaurants.json file location on your server.
    */
   static get DATABASE_URL() {
-    const port = 8080 // Change this to your server port
-    return `http://localhost:${port}/data/restaurants.json`;
+
+    //15:04
+    const port = 1337 // Change this to your server port
+    return `http://localhost:${port}/restaurants`;
   }
 
   /**
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback) {
-    let xhr = new XMLHttpRequest();
-    xhr.open('GET', DBHelper.DATABASE_URL);
-    xhr.onload = () => {
-      if (xhr.status === 200) { // Got a success response from server!
-        const json = JSON.parse(xhr.responseText);
-        const restaurants = json.restaurants;
-        callback(null, restaurants);
-      } else { // Oops!. Got an error from server.
-        const error = (`Request failed. Returned status of ${xhr.status}`);
-        callback(error, null);
-      }
-    };
-    xhr.send();
+    fetch(DBHelper.DATABASE_URL,{method:'GET'})
+      .then(response=>response.json()
+        .then(callback))
+      .catch(e => callback('fetchRestaurants Request failed.'));
   }
-
+ 
   /**
    * Fetch a restaurant by its ID.
    */
   static fetchRestaurantById(id, callback) {
     // fetch all restaurants with proper error handling.
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    DBHelper.fetchRestaurants((restaurants, error) => {
       if (error) {
-        callback(error, null);
+        callback(null, error);
       } else {
         const restaurant = restaurants.find(r => r.id == id);
         if (restaurant) { // Got the restaurant
-          callback(null, restaurant);
+          callback(restaurant, null);
         } else { // Restaurant does not exist in the database
-          callback('Restaurant does not exist', null);
+          callback(null, 'Restaurant data does not exist');
         }
       }
     });
@@ -55,13 +48,13 @@ class DBHelper {
    */
   static fetchRestaurantByCuisine(cuisine, callback) {
     // Fetch all restaurants  with proper error handling
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    DBHelper.fetchRestaurants((restaurants, error) => {
       if (error) {
-        callback(error, null);
+        callback(null, error);
       } else {
         // Filter restaurants to have only given cuisine type
         const results = restaurants.filter(r => r.cuisine_type == cuisine);
-        callback(null, results);
+        callback(results, null);
       }
     });
   }
@@ -71,13 +64,13 @@ class DBHelper {
    */
   static fetchRestaurantByNeighborhood(neighborhood, callback) {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    DBHelper.fetchRestaurants((restaurants, error) => {
       if (error) {
-        callback(error, null);
+        callback(null, error);
       } else {
         // Filter restaurants to have only given neighborhood
         const results = restaurants.filter(r => r.neighborhood == neighborhood);
-        callback(null, results);
+        callback(results, null);
       }
     });
   }
@@ -87,9 +80,9 @@ class DBHelper {
    */
   static fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, callback) {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    DBHelper.fetchRestaurants((restaurants, error) => {
       if (error) {
-        callback(error, null);
+        callback(null, error);
       } else {
         let results = restaurants
         if (cuisine != 'all') { // filter by cuisine
@@ -98,7 +91,7 @@ class DBHelper {
         if (neighborhood != 'all') { // filter by neighborhood
           results = results.filter(r => r.neighborhood == neighborhood);
         }
-        callback(null, results);
+        callback(results, null);
       }
     });
   }
@@ -108,15 +101,15 @@ class DBHelper {
    */
   static fetchNeighborhoods(callback) {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    DBHelper.fetchRestaurants((restaurants, error) => {
       if (error) {
-        callback(error, null);
+        callback(null, error);
       } else {
         // Get all neighborhoods from all restaurants
         const neighborhoods = restaurants.map((v, i) => restaurants[i].neighborhood)
         // Remove duplicates from neighborhoods
         const uniqueNeighborhoods = neighborhoods.filter((v, i) => neighborhoods.indexOf(v) == i)
-        callback(null, uniqueNeighborhoods);
+        callback(uniqueNeighborhoods, null);
       }
     });
   }
@@ -126,15 +119,15 @@ class DBHelper {
    */
   static fetchCuisines(callback) {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    DBHelper.fetchRestaurants((restaurants, error) => {
       if (error) {
-        callback(error, null);
+        callback(null, error);
       } else {
         // Get all cuisines from all restaurants
         const cuisines = restaurants.map((v, i) => restaurants[i].cuisine_type)
         // Remove duplicates from cuisines
         const uniqueCuisines = cuisines.filter((v, i) => cuisines.indexOf(v) == i)
-        callback(null, uniqueCuisines);
+        callback(uniqueCuisines, null);
       }
     });
   }
@@ -151,20 +144,21 @@ class DBHelper {
      */
     static imageUrlForRestaurant(restaurant) {
 
-      return (`/img/${restaurant.photograph}`);
+      return (`/img/${restaurant.id}` + '.jpg');
     }
 /**
    * Restaurant image description.
    */
   static imageDescriptionForRestaurant(restaurant) {
 
-    return (`${restaurant.photographDescription}`);
+    //return (`${restaurant.photographDescription}`);
+    return ('a restaurant with diners');
   }
   /**
    * Restaurant SOURCE SET.
    */
    static imageSrcsetForRestaurant(restaurant){
-        let imageNameNoPrefix = restaurant.photograph.substring(0,1);
+        let imageNameNoPrefix = restaurant.id;
         let isLargeWidth = window.matchMedia("screen and (min-width: 990px)").matches;
         if (isLargeWidth)
             return (`/img/final/${imageNameNoPrefix}-800_large_1x.jpg 1x, /img/final/${imageNameNoPrefix}-800_large_2x.jpg 2x`);
