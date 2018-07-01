@@ -14,18 +14,18 @@ module.exports = function(grunt) {
 		  {
             width: 800,
             suffix: '_large_2x',
-            quality: 100
+            quality: 85
           },
-		  // {
-            // width: 400,
-            // suffix: '_small_1x',
-            // quality: 50
-          // },
-		  // {
-            // width: 400,
-            // suffix: '_small_2x',
-            // quality: 100
-          // },
+		  {
+            width: 400,
+            suffix: '_small_1x',
+            quality: 50
+          },
+		  {
+            width: 400,
+            suffix: '_small_2x',
+            quality: 85
+          },
 		  ]
         },
         files: [{

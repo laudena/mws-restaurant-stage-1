@@ -17,7 +17,7 @@ const server=require('node-http-server');
 server.deploy(
     {
         port:8080,
-        root:__dirname + "/.."
+        root:__dirname + "/../dist"
     },
     serverReady
 );

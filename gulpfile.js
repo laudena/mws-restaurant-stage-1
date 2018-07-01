@@ -7,7 +7,10 @@ var browserSync = require('browser-sync').create();
 //var eslint = require('gulp-eslint_d');
 //var jasmine = require('gulp-jasmine-phantom');
 var concat = require('gulp-concat');
-var uglify = require('gulp-uglify');
+//var uglify = require('gulp-uglify');
+var imagemin = require('gulp-imagemin');
+var imageminWebp = require('imagemin-webp');
+//var pngquant= require('imagemin-pngquant');
 
 gulp.task('default', ['copy-html', 'copy-images', 'styles', 'lint',  'main-scripts'], function() {
 	gulp.watch('sass/**/*.scss', ['styles']);
@@ -43,6 +46,8 @@ gulp.task('main-scripts', function() {
 		.pipe(concat('allrestaurant.js'))
 		//.pipe(uglify())
 		.pipe(gulp.dest('dist/js'));
+	gulp.src('sw.js')
+		.pipe(gulp.dest('dist'));
 	
 
 	// gulp.src('js/main.js')
@@ -59,7 +64,11 @@ gulp.task('copy-html', function() {
 });
 
 gulp.task('copy-images', function() {
-	gulp.src('img/final/*')
+	gulp.src('img/final/*.{jpg,png}')
+		.pipe(imagemin({
+			progressive: true,
+			use: [imageminWebp()]
+		}))
 		.pipe(gulp.dest('dist/img/final'));
 });
 
