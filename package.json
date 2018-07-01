@@ -15,8 +15,16 @@
     "grunt-mkdir": "~0.1.2"
   },
   "dependencies": {
+    "browser-sync": "^2.24.5",
     "connect": "^3.6.6",
+    "eslint_d": "^6.0.0",
     "grunt-responsive-images": "^0.1.6",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^5.0.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-eslint": "^4.0.2",
+    "gulp-sass": "^4.0.1",
+    "gulp-uglify": "^3.0.0",
     "idb": "^2.1.3",
     "imageMagick": "^0.1.2",
     "imager.js": "^0.5.1",

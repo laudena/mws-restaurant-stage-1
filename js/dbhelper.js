@@ -1,7 +1,6 @@
 //import idb from 'idb';
 
-
-const dbPromise = idb.open('store', 1, upgradeDB => {
+const dbPromise = self.idb.open('store', 1, upgradeDB => {
   // Note: we don't use 'break' in this switch statement,
   // the fall-through behaviour is what we want.
   switch (upgradeDB.oldVersion) {
