@@ -1,4 +1,6 @@
-## For the server, please use: ***node /server/http.js*** `Arnon Lauden`
+## To run the app: 
+1. please activate stage-2 server at laudena/mws-restaurant-stage-2, and then:
+2. please use: ***gulp*** `Arnon Lauden`
 
 ---
 
