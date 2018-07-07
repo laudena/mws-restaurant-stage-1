@@ -1,4 +1,4 @@
-var staticCacheName = 'rest-static-v7';
+var staticCacheName = 'rest-static-v8';
 var contentImgsCache = 'rest-content-imgs';
 var allCaches = [
   staticCacheName,
@@ -45,22 +45,26 @@ self.addEventListener('fetch', function(event) {
           return;
         }
     if (requestUrl.pathname.startsWith('/restaurant.html') && requestUrl.search.startsWith('?id=')) {
-              event.respondWith(serveRestaurantPage(event.request));
+              event.respondWith(servePage(event.request));
               return;
             }
     if (requestUrl.pathname === '/') {
-      event.respondWith(caches.match('/'));
+      event.respondWith(servePage('index.html'));
       return;
     }
-
-
+    
+    if (requestUrl.pathname.startsWith('/css') || requestUrl.pathname.startsWith('/js')) {
+      event.respondWith(servePage(event.request));
+      return;
+    }
   }
 
   event.respondWith(
     caches.match(event.request).then(function(response) {
-      return response || fetch(event.request);
+      return response || fetch(event.request) || 'Not Found';
     })
-  );
+    //.catch(function (e) { return 'not found ' + e; })
+    );
 });
 
 
@@ -73,13 +77,13 @@ function servePhoto(request) {
 
       return fetch(request).then(function(networkResponse) {
         cache.put(storageUrl, networkResponse.clone());
-        return networkResponse ;
+        return networkResponse || '<h2>Sorry, no photo found...</h2>';
       });
     });
   });
 }
 
-function serveRestaurantPage(request) {
+function servePage(request) {
   var storageUrl = request.url;
 
   return caches.open(staticCacheName).then(function(cache) {

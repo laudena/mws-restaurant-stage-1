@@ -555,7 +555,8 @@ window.initMap = () => {
       self.map = new google.maps.Map(document.getElementById('map'), {
         zoom: 16,
         center: restaurant.latlng,
-        scrollwheel: false
+        scrollwheel: false,
+        animation : null,
       });
       fillBreadcrumb();
       DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
@@ -579,6 +580,8 @@ fetchRestaurantFromURL = (callback) => {
     DBHelper.fetchRestaurantById(id, (restaurant, error) => {
       self.restaurant = restaurant;
       if (!restaurant) {
+        const name = document.getElementById('restaurant-name');
+        name.innerHTML = error;
         console.error(error);
         return;
       }
