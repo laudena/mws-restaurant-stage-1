@@ -336,9 +336,17 @@ class DBHelper {
    * Database URL.
    * Change this to restaurants.json file location on your server.
    */
+   static get PORT(){
+    return 1337;
+   }
   static get DATABASE_URL() {
-    const port = 1337 // Change this to your server port
-    return `http://localhost:${port}/restaurants`;
+    //const port = 1337 // Change this to your server port
+    return `http://localhost:${DBHelper.PORT}/restaurants`;
+  }
+
+  static get REVIEWS_URL() {
+    return `http://localhost:${DBHelper.PORT}/reviews/?restaurant_id=`;
+
   }
 
   /**
@@ -360,7 +368,7 @@ class DBHelper {
         console.log ('failed to download. attempting indexDB...' + e);
         dbPromise.then(db => {
           return db.transaction('obj')
-              .objectStore('obj').get(1);
+              .objectStore('obj').get(9999);
           })
             .then(function(obj) {
             console.log('received from DB: ' + obj);
@@ -372,17 +380,60 @@ class DBHelper {
       
   }
  
+ static fetchReviewByRestaurantId(restaurant_id, callback) {
+    const review_url = DBHelper.REVIEWS_URL+ restaurant_id;
+    fetch(review_url ,{method:'GET'})
+      .then(function(response) { 
+        console.log ('response:' + response);
+        return response.json(); 
+      })
+      .then(function(myJson) { 
+        console.log ('myJson' + myJson);
+        DBHelper.addReviewToDB(restaurant_id, myJson);
+        return myJson;
+      })
+      .then(callback)
+      .catch(function (e) {
+        console.log ('failed to download. attempting indexDB...' + e);
+        dbPromise.then(db => {
+          return db.transaction('obj')
+              .objectStore('obj').get(restaurant_id);
+          })
+            .then(function(obj) {
+            console.log('received review of restaurant #'+restaurant_id+' from DB: ' + obj);
+            if (obj != null)
+              return obj.data;
+            else
+              return null;
+            })
+            .then(callback);
+        
+        });
+      
+  }
+
  static addRestaurantRecordsToDB(obj){
   dbPromise.then(db => {
-  const tx = db.transaction('obj', 'readwrite');
-  tx.objectStore('obj').put({
-    id: 1,
-    data: obj
+    const tx = db.transaction('obj', 'readwrite');
+    tx.objectStore('obj').put({
+      id: 9999,
+      data: obj
+      });
+      return tx.complete;
   });
-  return tx.complete;
-});
+  }
 
- }
+ static addReviewToDB(restaurant_id, obj){
+  dbPromise.then(db => {
+    const tx = db.transaction('obj', 'readwrite');
+    tx.objectStore('obj').put({
+      id: restaurant_id,
+      data: obj
+      });
+      return tx.complete;
+  });
+  }
+  
   /**
    * Fetch a restaurant by its ID.
    */
@@ -394,7 +445,27 @@ class DBHelper {
       } else {
         const restaurant = restaurants.find(r => r.id == id);
         if (restaurant) { // Got the restaurant
-          callback(restaurant, null);
+
+          //fetch more data on the specific restaurant
+          DBHelper.fetchReviewByRestaurantId(id, (reviews, error) => {
+            if (error){
+              console.log('no review found for restaurant #'+id+'...');
+              callback(restaurant, null);
+            }
+            else {
+              if (Array.isArray(reviews)){
+                restaurant.reviews = reviews;
+              }
+              else {
+                restaurant.reviews = [];
+                restaurant.reviews.push(reviews);
+              }
+
+              console.log('added reviews to restaurant #'+id+': ' + reviews);
+              callback(restaurant, null);
+            }
+          });
+          //with or without reviews - send the restaurant data         
         } else { // Restaurant does not exist in the database
           callback(null, 'Restaurant data does not exist');
         }
@@ -669,7 +740,7 @@ createReviewHTML = (review) => {
   li.appendChild(name);
 
   const date = document.createElement('p');
-  date.innerHTML = review.date;
+  date.innerHTML = 'Updated: ' + new Date(review.updatedAt).toLocaleString();
   li.appendChild(date);
 
   const rating = document.createElement('p');
@@ -677,7 +748,7 @@ createReviewHTML = (review) => {
   li.appendChild(rating);
 
   const comments = document.createElement('p');
-  comments.innerHTML = review.comments;
+  comments.innerHTML = decodeURI(review.comments);
   li.appendChild(comments);
 
   return li;

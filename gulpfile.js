@@ -14,9 +14,10 @@ var imageminWebp = require('imagemin-webp');
 
 gulp.task('default', ['copy-html', 'copy-images', 'styles', 'lint',  'main-scripts'], function() {
 	gulp.watch('sass/**/*.scss', ['styles']);
-	gulp.watch('js/**/*.js', ['lint']);
+	gulp.watch('js/**/*.js', ['main-scripts']);
 	gulp.watch('/index.html', ['copy-html']);
-	gulp.watch(['./dist/index.html', './dist/sw.js']).on('change', browserSync.reload);
+	gulp.watch(['./dist/index.html', './dist/sw.js', '.dist/allmain.js', './dist/allrestaurant.js']).on('change', browserSync.reload);
+
 
 	browserSync.init({
 		server: './dist'
