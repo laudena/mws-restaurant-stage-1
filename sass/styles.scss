@@ -274,14 +274,17 @@ nav h1 a {
   text-transform: uppercase;
 	width: 100%;
 }
-#restaurant-container, #reviews-container {
+#restaurant-container, #reviews-container, #add-review-container {
   border-bottom: 1px solid #d9d9d9;
   border-top: 1px solid #fff;
   padding: 140px 40px 30px;
   width: 100%;
 }
 #reviews-container {
-  padding: 30px 40px 80px;
+ padding: 30px 40px 30px;
+}
+#add-review-container {
+  padding: 10px 40px 80px;
 }
 #reviews-container h2 {
   color: #d07100;
@@ -312,6 +315,46 @@ nav h1 a {
   color: #666;
 }
 
+/* ===================== New Review/Comment section ===================*/
+#add-review-container{
+    width:100%;
+    height:250px;
+
+}
+#add-review-container h3 {
+  color: #012358;
+  font-size: 1rem;
+  font-weight: normal;
+  line-height: 1;
+  margin: 20 0 0 20px;
+  padding: 10px 0 0 0;
+
+}
+.add-review-form {
+  width: 100%;
+  height: 150px;
+  background-color: #3397DB;
+  align-items: center;
+  font-family: Arial,sans-serif;
+  font-size: 14pt;
+  height: 50px;
+  padding: 0 10px;
+}
+
+.add-review-form select {
+  background-color: white;
+  border: 1px solid #fff;
+  font-family: Arial,sans-serif;
+  font-size: 11pt;
+  height: 30px;
+  letter-spacing: 0;
+  margin: 10px 10px;
+  padding: 0 10px;
+  width: 65px;
+}
+.add-review-form textarea{
+  width:100%;
+}
 
 
 /*breakpoints*/
