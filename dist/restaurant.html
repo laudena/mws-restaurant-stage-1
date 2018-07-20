@@ -51,16 +51,21 @@
     <!-- End reviews -->
     <section id="add-review-container">
       <h3 id="add-review-header"></h3>
-      <form class="add-review-form">
-        Your Name:<input id="user-name" type="text" name="user-name"/>
-        Rating:<select id="restaurant-rating" name="restaurant-rating">
+      <form class="add-review-form" target="#" onsubmit="event.preventDefault(); return false;">
+         <label for="user-name" >Your Name:</label>
+         <input id="user-name" type="text" name="user-name" aria-label="User Name"/>
+         <input id="restaurant-id" type="hidden"/>    <!-- a placeholder for restaurant id, to be used when POST-ing a new review -->
+         <label for="restaurant-rating" >Rating:</label>
+        <select id="restaurant-rating" name="restaurant-rating"  aria-label="Restaurant Rating">
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
           <option value="4">4</option>
           <option value="4">5</option>
         </select>
-        Comment:<textarea rows="8" cols="60" id="restaurant-comment" name="restaurant-comment"></textarea>
+        <label for="restaurant-comment" >Review / Comment:</label>
+        <textarea rows="8" cols="60" id="restaurant-comment" name="restaurant-comment"  aria-label="Review and comments"></textarea>
+        <button type="button" onclick="handleFormSubmit(event)" aria-label="submit form">Submit</button>
       </form>
     </section>
   </main>

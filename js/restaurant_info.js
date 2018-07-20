@@ -52,6 +52,10 @@ fetchRestaurantFromURL = (callback) => {
  * Create restaurant HTML and add it to the webpage
  */
 fillRestaurantHTML = (restaurant = self.restaurant) => {
+  
+  const rest_id = document.getElementById('restaurant-id');
+  rest_id.value = restaurant.id;
+
   const name = document.getElementById('restaurant-name');
   name.innerHTML = restaurant.name;
 
@@ -164,4 +168,44 @@ getParameterByName = (name, url) => {
   if (!results[2])
     return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+
+function handleFormSubmit (event) {
+  var reviewer_name = window.document.getElementById("user-name").value;
+  var rating = window.document.getElementById("restaurant-rating").value;
+  var comment_text = window.document.getElementById("restaurant-comment").value;
+  var restaurant_id = window.document.getElementById("restaurant-id").value;
+  console.log("form submitted: (" + restaurant_id+ ")"+ reviewer_name +","+rating+","+comment_text);
+  
+  let payload =
+  {
+    restaurant_id: restaurant_id,
+    name: reviewer_name,
+    rating: rating,
+    comments: comment_text
+  }
+
+  let fetchOptions = {
+        method: "POST", 
+        mode: "cors", 
+        cache: "no-cache", 
+        headers: {
+            "Content-Type": "application/json; charset=utf-8",
+        },
+        body: JSON.stringify(payload), // body data 
+  }
+
+  //look for queued items. 
+  //send queued items
+  //send current item
+  //if failed - add to queue
+  fetch(DBHelper.ADD_REVIEW_URL, fetchOptions)
+    .then(function(response){
+      console.log("post outcome:" + response);
+    }) 
+    .catch(function(error){
+       console.error(`Fetch Error =\n`, error)
+    });
+  
 }

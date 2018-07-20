@@ -348,6 +348,9 @@ class DBHelper {
     return `http://localhost:${DBHelper.PORT}/reviews/?restaurant_id=`;
 
   }
+  static get ADD_REVIEW_URL(){
+    return `http://localhost:${DBHelper.PORT}/reviews/`;
+  }
 
   /**
    * Fetch all restaurants.
