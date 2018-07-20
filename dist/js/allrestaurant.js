@@ -392,6 +392,7 @@ class DBHelper {
       })
       .then(function(myJson) { 
         console.log ('myJson' + myJson);
+        //todo: merge unsaved data into the received data , then write it all to db
         DBHelper.addReviewToDB(restaurant_id, myJson);
         return myJson;
       })
@@ -437,6 +438,33 @@ class DBHelper {
   });
   }
   
+  static addNewReview(payload_data, callback)
+  {
+
+    let fetchOptions = {
+          method: "POST", 
+          mode: "cors", 
+          cache: "no-cache", 
+          headers: {
+              "Content-Type": "application/json; charset=utf-8",
+          },
+          body: JSON.stringify(payload_data), // body data 
+      }
+
+  //look for queued items. 
+  //send queued items
+  //send current item
+  //if failed - add to queue
+  fetch(DBHelper.ADD_REVIEW_URL, fetchOptions)
+    .then(function(response){
+      console.log("post outcome:" + response);
+      return response;
+    })
+    .catch(function(error){
+       console.error(`Fetch Error =\n`, error)
+    }).then(callback);
+
+  }
   /**
    * Fetch a restaurant by its ID.
    */
@@ -789,6 +817,9 @@ getParameterByName = (name, url) => {
 
 
 function handleFormSubmit (event) {
+
+  //TODO: validate form
+
   var reviewer_name = window.document.getElementById("user-name").value;
   var rating = window.document.getElementById("restaurant-rating").value;
   var comment_text = window.document.getElementById("restaurant-comment").value;
@@ -803,26 +834,7 @@ function handleFormSubmit (event) {
     comments: comment_text
   }
 
-  let fetchOptions = {
-        method: "POST", 
-        mode: "cors", 
-        cache: "no-cache", 
-        headers: {
-            "Content-Type": "application/json; charset=utf-8",
-        },
-        body: JSON.stringify(payload), // body data 
-  }
-
-  //look for queued items. 
-  //send queued items
-  //send current item
-  //if failed - add to queue
-  fetch(DBHelper.ADD_REVIEW_URL, fetchOptions)
-    .then(function(response){
-      console.log("post outcome:" + response);
-    }) 
-    .catch(function(error){
-       console.error(`Fetch Error =\n`, error)
-    });
-  
+  DBHelper.addNewReview(payload, function(response){
+    console.log("response from adding new review:" + response.status);
+  });
 }
