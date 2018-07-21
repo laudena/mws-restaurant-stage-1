@@ -37,27 +37,38 @@ self.addEventListener('activate', function(event) {
 });
 
 self.addEventListener('fetch', function(event) {
-  var requestUrl = new URL(event.request.url);
+    var requestUrl = new URL(event.request.url);
 
-  if (requestUrl.origin === location.origin) {
-    if (requestUrl.pathname.startsWith('/img/')) {
-          event.respondWith(servePhoto(event.request));
-          return;
-        }
-    if (requestUrl.pathname.startsWith('/restaurant.html') && requestUrl.search.startsWith('?id=')) {
-          event.respondWith(servePage(event.request));
-          return;
-        }
-    if (requestUrl.pathname === '/') {
-      event.respondWith(servePage('index.html'));
-      return;
+    if (requestUrl.origin === location.origin) {
+      if (requestUrl.pathname.startsWith('/img/')) {
+            event.respondWith(servePhoto(event.request));
+            return;
+          }
+      if (requestUrl.pathname.startsWith('/restaurant.html') && requestUrl.search.startsWith('?id=')) {
+            event.respondWith(servePage(event.request));
+            return;
+          }
+      if (requestUrl.pathname === '/') {
+        event.respondWith(servePage('index.html'));
+        return;
+      }
+      
+      if (requestUrl.pathname.startsWith('/css') || requestUrl.pathname.startsWith('/js')) {
+        event.respondWith(servePage(event.request));
+        return;
+      }
+      
     }
-    
-    if (requestUrl.pathname.startsWith('/css') || requestUrl.pathname.startsWith('/js')) {
-      event.respondWith(servePage(event.request));
-      return;
+    else if (event.request.method == 'POST' && requestUrl.pathname == '/reviews/'){
+      console.log('sw caught post attempt');
     }
-  }
+    else if (event.request.method == 'GET' && requestUrl.pathname.includes('reviews')){
+      let pos = requestUrl.search.lastIndexOf('=');
+      console.log('SW: Get for reviews of restaurant "'+requestUrl.search.substring(pos+1)+'". checking for missent itmes...');
+      //DBHelper.handlePosponedReviews();
+
+
+    }
 
   event.respondWith(
     caches.match(event.request).then(function(response) {

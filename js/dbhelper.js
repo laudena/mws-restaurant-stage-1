@@ -36,6 +36,10 @@ class DBHelper {
     return `http://localhost:${DBHelper.PORT}/reviews/`;
   }
 
+  static get NOT_UPDATED_YET_DATE(){
+    return 'Not yet! (waiting for network)'
+    //return '1970-01-01T00:00:00.0Z';
+  }
   /**
    * Fetch all restaurants.
    */
@@ -68,36 +72,40 @@ class DBHelper {
   }
  
  static fetchReviewByRestaurantId(restaurant_id, callback) {
-    const review_url = DBHelper.REVIEWS_URL+ restaurant_id;
-    fetch(review_url ,{method:'GET'})
-      .then(function(response) { 
-        console.log ('response:' + response);
-        return response.json(); 
-      })
-      .then(function(myJson) { 
-        console.log ('myJson' + myJson);
-        //todo: merge unsaved data into the received data , then write it all to db
-        DBHelper.addReviewToDB(restaurant_id, myJson);
-        return myJson;
-      })
-      .then(callback)
-      .catch(function (e) {
-        console.log ('failed to download. attempting indexDB...' + e);
-        dbPromise.then(db => {
-          return db.transaction('obj')
-              .objectStore('obj').get(restaurant_id);
-          })
-            .then(function(obj) {
-            console.log('received review of restaurant #'+restaurant_id+' from DB: ' + obj);
-            if (obj != null)
-              return obj.data;
-            else
-              return null;
+    
+
+    //first - check if any reviews need to be updated to server
+    DBHelper.handlePosponedReviews(function(){
+
+      const review_url = DBHelper.REVIEWS_URL+ restaurant_id;
+      fetch(review_url ,{method:'GET'})
+        .then(function(response) { 
+          console.log ('response:' + response);
+          return response.json(); 
+        })
+        .then(function(myJson) { 
+          console.log ('myJson' + myJson);
+          DBHelper.addRestaurantReviewsToDB(restaurant_id, myJson);
+          return myJson;
+        })
+        .then(callback)
+        .catch(function (e) {
+          console.log ('failed to download. attempting indexDB...' + e);
+          dbPromise.then(db => {
+            return db.transaction('obj')
+                .objectStore('obj').get(restaurant_id);
             })
-            .then(callback);
-        
-        });
-      
+              .then(function(obj) {
+              console.log('received review of restaurant #'+restaurant_id+' from DB: ' + obj);
+              if (obj != null)
+                return obj.data;
+              else
+                return null;
+              })
+              .then(callback);
+          
+          });
+      });
   }
 
  static addRestaurantRecordsToDB(obj){
@@ -111,7 +119,7 @@ class DBHelper {
   });
   }
 
- static addReviewToDB(restaurant_id, obj){
+ static addRestaurantReviewsToDB(restaurant_id, obj){
   dbPromise.then(db => {
     const tx = db.transaction('obj', 'readwrite');
     tx.objectStore('obj').put({
@@ -121,7 +129,34 @@ class DBHelper {
       return tx.complete;
   });
   }
+  static addRestaurantSingleReviewToDB(restaurant_id, review){
   
+
+    dbPromise.then(db => {
+        return db.transaction('obj')
+            .objectStore('obj').get(restaurant_id);
+        })
+          .then(function(obj) {
+          console.log('addRestaurantSingleReviewToDB. Received reviews of restaurant #'+restaurant_id);
+          if (obj != null){
+            obj.data.push(review);
+            return DBHelper.addRestaurantReviewsToDB(restaurant_id, obj.data)
+          }
+          else
+            return null;
+      });
+
+
+
+  // dbPromise.then(db => {
+  //   const tx = db.transaction('obj', 'readwrite');
+  //   tx.objectStore('obj').put({
+  //     id: restaurant_id,
+  //     data: obj
+  //     });
+  //     return tx.complete;
+  // });
+  }
   static addNewReview(payload_data, callback)
   {
 
@@ -135,17 +170,16 @@ class DBHelper {
           body: JSON.stringify(payload_data), // body data 
       }
 
-    //look for queued items. 
-    //send queued items
-    //send current item
-    //if failed - add to queue
     fetch(DBHelper.ADD_REVIEW_URL, fetchOptions)
       .then(function(response){
         console.log("post outcome:" + response);
         return response;
       })
       .catch(function(error){
-         console.error(`Fetch Error =\n`, error)
+         console.error(`Fetch Error =\n`, error);
+         //let id = parseInt(payload_data.restaurant_id);
+         return DBHelper.addRestaurantSingleReviewToDB(payload_data.restaurant_id.toString(), payload_data)
+
       })
       .then (callback);
       // .then(function(response){
@@ -154,6 +188,35 @@ class DBHelper {
       // });
 
   }
+
+
+  static handlePosponedReviews(callback){
+
+    dbPromise.then(db => {
+      var transaction = db.transaction("obj", "readonly");
+      var objectStore = transaction.objectStore("obj");
+      var request = objectStore.openKeyCursor();
+      request.onsuccess = function(event) {
+        var cursor = event.target.result;
+        if(cursor) {
+          console.log('Cursor:' + cursor.key);
+          // cursor.key contains the key of the current record being iterated through
+          // note that there is no cursor.value, unlike for openCursor
+          // this is where you'd do something with the result
+          cursor.continue();
+        } else {
+          console.log('finished running with cursor:');
+          // no more results
+        }
+      };
+    }).
+    then(callback);
+  }
+
+
+
+
+
   /**
    * Fetch a restaurant by its ID.
    */

@@ -189,18 +189,27 @@ function handleFormSubmit (event) {
     restaurant_id: restaurant_id,
     name: reviewer_name,
     rating: rating,
-    comments: comment_text
+    comments: comment_text,
+    updatedAt: DBHelper.NOT_UPDATED_YET_DATE
   }
 
   DBHelper.addNewReview(payload, function(response){
-    console.log("response from adding new review:" + response.status);
-    if (response.status == 201 || response.status == 200)
-      window.location.assign(window.location.href);
+    
+    if (response == null){
+      //DBHelper.addRestaurantSingleReviewToDB(restaurant_id, payload);
+      //window.location.assign(window.location.href);
+      console.log("network error. saved to db");
+      return null;
+    }
+    else if (response.status == 201 || response.status == 200){
+      console.log("response from adding new review:" + response.status);
+      return response.status;
+      //window.location.assign(window.location.href);
+    }
+      
     //fetchRestaurantFromURL(true, function(data){
     //console.log(data);
     //}
-    
-      
-    
-  });
+  });//.then(function(){});
+  window.location.assign(window.location.href);
 }
