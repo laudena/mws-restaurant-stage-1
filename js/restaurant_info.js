@@ -118,6 +118,9 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
     ul.appendChild(createReviewHTML(review));
   });
   container.appendChild(ul);
+
+  const newReviewHeader = document.getElementById('add-review-header');
+  newReviewHeader.innerHTML = 'Add A Review For: ' + self.restaurant.name;
 }
 
 /**
@@ -175,11 +178,11 @@ function handleFormSubmit (event) {
 
   //TODO: validate form
 
-  var reviewer_name = window.document.getElementById("user-name").value;
-  var rating = window.document.getElementById("restaurant-rating").value;
-  var comment_text = window.document.getElementById("restaurant-comment").value;
-  var restaurant_id = window.document.getElementById("restaurant-id").value;
-  console.log("form submitted: (" + restaurant_id+ ")"+ reviewer_name +","+rating+","+comment_text);
+  let reviewer_name = window.document.getElementById("user-name").value;
+  let rating = window.document.getElementById("restaurant-rating").value;
+  let comment_text = window.document.getElementById("restaurant-comment").value;
+  let restaurant_id = parseInt(window.document.getElementById("restaurant-id").value);
+  console.log("form submitted: (rest:" + restaurant_id+ ") "+ reviewer_name +","+rating+","+comment_text);
   
   let payload =
   {
@@ -191,5 +194,13 @@ function handleFormSubmit (event) {
 
   DBHelper.addNewReview(payload, function(response){
     console.log("response from adding new review:" + response.status);
+    if (response.status == 201 || response.status == 200)
+      window.location.assign(window.location.href);
+    //fetchRestaurantFromURL(true, function(data){
+    //console.log(data);
+    //}
+    
+      
+    
   });
 }

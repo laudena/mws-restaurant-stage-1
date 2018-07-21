@@ -451,18 +451,23 @@ class DBHelper {
           body: JSON.stringify(payload_data), // body data 
       }
 
-  //look for queued items. 
-  //send queued items
-  //send current item
-  //if failed - add to queue
-  fetch(DBHelper.ADD_REVIEW_URL, fetchOptions)
-    .then(function(response){
-      console.log("post outcome:" + response);
-      return response;
-    })
-    .catch(function(error){
-       console.error(`Fetch Error =\n`, error)
-    }).then(callback);
+    //look for queued items. 
+    //send queued items
+    //send current item
+    //if failed - add to queue
+    fetch(DBHelper.ADD_REVIEW_URL, fetchOptions)
+      .then(function(response){
+        console.log("post outcome:" + response);
+        return response;
+      })
+      .catch(function(error){
+         console.error(`Fetch Error =\n`, error)
+      })
+      .then (callback);
+      // .then(function(response){
+      //   DBHelper.fetchRestaurantById(parseInt(payload_data.restaurant_id), callback);
+      //   fillReviewsHTML();
+      // });
 
   }
   /**

@@ -45,9 +45,9 @@ self.addEventListener('fetch', function(event) {
           return;
         }
     if (requestUrl.pathname.startsWith('/restaurant.html') && requestUrl.search.startsWith('?id=')) {
-              event.respondWith(servePage(event.request));
-              return;
-            }
+          event.respondWith(servePage(event.request));
+          return;
+        }
     if (requestUrl.pathname === '/') {
       event.respondWith(servePage('index.html'));
       return;
