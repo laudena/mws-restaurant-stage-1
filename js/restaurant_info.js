@@ -190,10 +190,10 @@ function handleFormSubmit (event) {
     name: reviewer_name,
     rating: rating,
     comments: comment_text,
-    updatedAt: DBHelper.NOT_UPDATED_YET_DATE
+    //createdAt: DBHelper.NOT_UPDATED_YET_DATE
   }
 
-  DBHelper.addNewReview(payload, function(response){
+  DBHelper.addNewReview(payload, true, function(response){
     
     if (response == null){
       //DBHelper.addRestaurantSingleReviewToDB(restaurant_id, payload);
@@ -204,12 +204,7 @@ function handleFormSubmit (event) {
     else if (response.status == 201 || response.status == 200){
       console.log("response from adding new review:" + response.status);
       return response.status;
-      //window.location.assign(window.location.href);
     }
-      
-    //fetchRestaurantFromURL(true, function(data){
-    //console.log(data);
-    //}
-  });//.then(function(){});
+  });
   window.location.assign(window.location.href);
 }

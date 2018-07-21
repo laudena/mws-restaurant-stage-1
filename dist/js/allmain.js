@@ -353,8 +353,8 @@ class DBHelper {
   }
 
   static get NOT_UPDATED_YET_DATE(){
-    return 'Not yet! (waiting for network)'
-    //return '1970-01-01T00:00:00.0Z';
+    //return 'Not yet! (waiting for network)'
+    return '1970-01-01T00:00:00.0Z';
   }
   /**
    * Fetch all restaurants.
@@ -391,7 +391,7 @@ class DBHelper {
     
 
     //first - check if any reviews need to be updated to server
-    DBHelper.handlePosponedReviews(function(){
+    DBHelper.handlePostponedReviews(function(){
 
       const review_url = DBHelper.REVIEWS_URL+ restaurant_id;
       fetch(review_url ,{method:'GET'})
@@ -473,7 +473,7 @@ class DBHelper {
   //     return tx.complete;
   // });
   }
-  static addNewReview(payload_data, callback)
+  static addNewReview(payload_data, addToDBWhenFailed, callback)
   {
 
     let fetchOptions = {
@@ -494,8 +494,10 @@ class DBHelper {
       .catch(function(error){
          console.error(`Fetch Error =\n`, error);
          //let id = parseInt(payload_data.restaurant_id);
-         return DBHelper.addRestaurantSingleReviewToDB(payload_data.restaurant_id.toString(), payload_data)
-
+         if (addToDBWhenFailed)
+          return DBHelper.addRestaurantSingleReviewToDB(payload_data.restaurant_id.toString(), payload_data)
+        else
+          return error;
       })
       .then (callback);
       // .then(function(response){
@@ -506,28 +508,112 @@ class DBHelper {
   }
 
 
-  static handlePosponedReviews(callback){
 
-    dbPromise.then(db => {
-      var transaction = db.transaction("obj", "readonly");
-      var objectStore = transaction.objectStore("obj");
-      var request = objectStore.openKeyCursor();
-      request.onsuccess = function(event) {
-        var cursor = event.target.result;
-        if(cursor) {
-          console.log('Cursor:' + cursor.key);
-          // cursor.key contains the key of the current record being iterated through
-          // note that there is no cursor.value, unlike for openCursor
-          // this is where you'd do something with the result
-          cursor.continue();
-        } else {
-          console.log('finished running with cursor:');
-          // no more results
-        }
-      };
-    }).
-    then(callback);
-  }
+   static handlePostponedReviews(callback){
+
+
+
+
+          dbPromise.then(db => {
+            return db.transaction('obj')
+                .objectStore('obj').getAll();
+            })
+              .then(function(request) {
+                var hasFailed = false;
+                request.forEach(function(o){
+                  console.log (o.id);
+                  if (o.id != 9999)
+                  {
+                    o.data.forEach(function(item){
+                      if (item.updatedAt == null)//DBHelper.NOT_UPDATED_YET_DATE)
+                      {
+                        //handle submission
+                        console.log ("found item to resubmit: " + item.restaurant_id);
+                        item.updatedAt = null;
+                        DBHelper.addNewReview(item, false, function(result){
+                          console.log ("finshed updateing");
+                          if (!result.ok)
+                            hasFailed = true;
+                        })
+                      }
+
+                    })
+                  }
+                })
+                if (hasFailed == false)
+                        callback();
+              });
+
+// dbPromise.then(db => {
+//             return db.transaction('obj')
+//                 .objectStore('obj')})
+// .then(function(objectStore){
+//   return objectStore.openCursor();
+// })
+// .then(function(reqCursor){
+//   return reqCursor.continue();})
+// .then(function(event){
+ 
+
+    //let cursor = event.target.result;
+      //if(cursor) {
+        // console.log('Cursor:' + event);
+        // cursor.key contains the key of the current record being iterated through
+        // note that there is no cursor.value, unlike for openCursor
+        // this is where you'd do something with the result
+      //   cursor.continue();
+      // } else {
+      //   console.log('finished running with cursor:');
+      //   // no more results
+      // }
+      // callback();
+    // });
+}
+  
+
+
+
+
+
+
+    //     let cursor = event.target.result;
+    //     if(cursor) {
+    //       console.log('Cursor:' + cursor.value);
+    //       // cursor.key contains the key of the current record being iterated through
+    //       // note that there is no cursor.value, unlike for openCursor
+    //       // this is where you'd do something with the result
+    //       cursor.continue();
+    //     } else {
+    //       console.log('finished running with cursor:');
+    //       // no more results
+    //     }
+    //     callback();
+    //   }
+    // });
+
+
+
+    // dbPromise.then(db => {
+    //   let transaction = db.transaction('obj', 'readonly');
+    //   let objectStore = transaction.objectStore('obj');
+    //   let reqCursor = objectStore.openCursor();
+    //   reqCursor.onsuccess = function(event) {
+    //     let cursor = event.target.result;
+    //     if(cursor) {
+    //       console.log('Cursor:' + cursor.value);
+    //       // cursor.key contains the key of the current record being iterated through
+    //       // note that there is no cursor.value, unlike for openCursor
+    //       // this is where you'd do something with the result
+    //       cursor.continue();
+    //     } else {
+    //       console.log('finished running with cursor:');
+    //       // no more results
+    //     }
+        
+    //   };
+    // });
+    
+ 
 
 
 
