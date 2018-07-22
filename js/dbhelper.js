@@ -224,10 +224,11 @@ class DBHelper {
                       let promiseArr = o.data.map(function (item) {
                           // return the promise to array
                           return new Promise(function (resolve, reject) {
+                            console.log ("scanning reviews: " + item.restaurant_id+","+item.name);
                             if (item.updatedAt == null)//DBHelper.NOT_UPDATED_YET_DATE)
                             {
                               //handle submission
-                              console.log ("found item to resubmit: " + item.restaurant_id);
+                              console.log ("found item to resubmit: " + item.name);
                               item.updatedAt = null;
                               DBHelper.addNewReview(item, false, function(result){
                                 console.log ("finshed updateing");
@@ -244,14 +245,24 @@ class DBHelper {
                           
                       });
                       Promise.all(promiseArr)
-                      .then(resolve_request())
-                      .catch(reject_request());
+                      .then(function(res){
+                        resolve_request();
+                      })
+                      .catch(function(res){
+                        reject_request();
+                      });
                     });
                   
                 });
                 Promise.all(promiseRequestArr)
-                .then(callback(true))
-                .catch(callback(true))
+                .then(function(res){
+                  console.log('promiseRequestArr succeedd '+ res);
+                  callback(true);
+                })
+                .catch(function(res){
+                  console.log('promiseRequestArr failed '+ res);
+                  callback(true);
+                });
                     
               });
             }

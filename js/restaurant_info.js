@@ -133,7 +133,14 @@ createReviewHTML = (review) => {
   li.appendChild(name);
 
   const date = document.createElement('p');
-  date.innerHTML = 'Updated: ' + new Date(review.updatedAt).toLocaleString();
+  if (review.updatedAt){
+    date.innerHTML = 'Updated: ' + new Date(review.updatedAt).toLocaleString();
+    date.classList.remove("network-issue");
+  }
+  else{
+    date.innerHTML = '[Pending update] waiting for network to restore...';
+    date.classList.add("network-issue");
+  }
   li.appendChild(date);
 
   const rating = document.createElement('p');
