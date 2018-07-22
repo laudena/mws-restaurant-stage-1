@@ -194,10 +194,6 @@ class DBHelper {
 
 
    static handlePostponedReviews(callback){
-
-
-
-
           dbPromise.then(db => {
             return db.transaction('obj')
                 .objectStore('obj').getAll();
@@ -223,10 +219,16 @@ class DBHelper {
 
                     })
                   }
-                })
-                if (hasFailed == false)
-                        callback();
-              });
+                  
+                }); //foreach?
+                return hasFailed;
+              })  //.then(function(request)
+                .then(function(atLeastOneFailed){
+                  if (atLeastOneFailed == false)
+                      callback();
+                });
+                
+              }
 
 // dbPromise.then(db => {
 //             return db.transaction('obj')
