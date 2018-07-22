@@ -195,16 +195,19 @@ function handleFormSubmit (event) {
 
   DBHelper.addNewReview(payload, true, function(response){
     
+    console.log("handleFormSubmit --> callback from DBHelper.addNewReview started...");
     if (response == null){
       //DBHelper.addRestaurantSingleReviewToDB(restaurant_id, payload);
       //window.location.assign(window.location.href);
-      console.log("network error. saved to db");
+      console.log("handleFormSubmit --> network error, but saved to db");
       return null;
     }
     else if (response.status == 201 || response.status == 200){
-      console.log("response from adding new review:" + response.status);
+      console.log("handleFormSubmit --> response from adding new review:" + response.status);
       return response.status;
     }
   });
+  //console.log("network error. saved to db");
+  console.log("handleFormSubmit --> reloading page...");      
   window.location.assign(window.location.href);
 }

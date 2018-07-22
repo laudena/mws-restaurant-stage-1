@@ -362,7 +362,7 @@ class DBHelper {
   static fetchRestaurants(callback) {
     fetch(DBHelper.DATABASE_URL,{method:'GET'})
       .then(function(response) { 
-        console.log ('response:' + response);
+        console.log ('fetchRestaurants --> responses:' + response.length);
         return response.json(); 
       })
       .then(function(myJson) { 
@@ -378,7 +378,7 @@ class DBHelper {
               .objectStore('obj').get(9999);
           })
             .then(function(obj) {
-            console.log('received from DB: ' + obj);
+            console.log('fetchRestaurants --> received from DB: ' + obj.length);
             return obj.data;
             })
             .then(callback);
@@ -390,9 +390,15 @@ class DBHelper {
  static fetchReviewByRestaurantId(restaurant_id, callback) {
     
 
+    console.log ('fetchReviewByRestaurantId --> entered');
     //first - check if any reviews need to be updated to server
-    DBHelper.handlePostponedReviews(function(){
+    DBHelper.handlePostponedReviews(function(contin){
 
+      console.log ('fetchReviewByRestaurantId --> callback started');
+      if(!contin){
+        console.log ('fetchReviewByRestaurantId --> stop fetch !');
+        return;
+      }
       const review_url = DBHelper.REVIEWS_URL+ restaurant_id;
       fetch(review_url ,{method:'GET'})
         .then(function(response) { 
@@ -476,6 +482,7 @@ class DBHelper {
   static addNewReview(payload_data, addToDBWhenFailed, callback)
   {
 
+    console.log('addNewReview --> started, append to dB? -' + addToDBWhenFailed)
     let fetchOptions = {
           method: "POST", 
           mode: "cors", 
@@ -488,11 +495,11 @@ class DBHelper {
 
     fetch(DBHelper.ADD_REVIEW_URL, fetchOptions)
       .then(function(response){
-        console.log("post outcome:" + response);
+        console.log("addNewReview --> post outcome:" + response.statusText);
         return response;
       })
       .catch(function(error){
-         console.error(`Fetch Error =\n`, error);
+         console.log(`addNewReview --> Fetch Error =\n`, error);
          //let id = parseInt(payload_data.restaurant_id);
          if (addToDBWhenFailed)
           return DBHelper.addRestaurantSingleReviewToDB(payload_data.restaurant_id.toString(), payload_data)
@@ -510,112 +517,60 @@ class DBHelper {
 
 
    static handlePostponedReviews(callback){
-
-
-
-
+    console.log ('handlePostponedReviews --> entered');
+    
           dbPromise.then(db => {
             return db.transaction('obj')
                 .objectStore('obj').getAll();
             })
               .then(function(request) {
-                var hasFailed = false;
-                request.forEach(function(o){
-                  console.log (o.id);
-                  if (o.id != 9999)
-                  {
-                    o.data.forEach(function(item){
-                      if (item.updatedAt == null)//DBHelper.NOT_UPDATED_YET_DATE)
-                      {
-                        //handle submission
-                        console.log ("found item to resubmit: " + item.restaurant_id);
-                        item.updatedAt = null;
-                        DBHelper.addNewReview(item, false, function(result){
-                          console.log ("finshed updateing");
-                          if (!result.ok)
-                            hasFailed = true;
-                        })
+
+                //outer loop - restaurants
+                let promiseRequestArr = request.map(function(o){
+                  
+                    return new Promise(function (resolve_request, reject_request) {
+                      if (o.id == 9999){
+                        resolve_request();
+                        return;
                       }
+                        
+                      console.log ('checking reviews of restaurant id:' + o.id);
+                    
+                      //inner loop - reviews in a restaurant
+                      let promiseArr = o.data.map(function (item) {
+                          // return the promise to array
+                          return new Promise(function (resolve, reject) {
+                            if (item.updatedAt == null)//DBHelper.NOT_UPDATED_YET_DATE)
+                            {
+                              //handle submission
+                              console.log ("found item to resubmit: " + item.restaurant_id);
+                              item.updatedAt = null;
+                              DBHelper.addNewReview(item, false, function(result){
+                                console.log ("finshed updateing");
+                                if (result.ok)
+                                  resolve();
+                                else
+                                  reject();
+                              })
+                            }
+                            else 
+                              resolve();
 
-                    })
-                  }
-                })
-                if (hasFailed == false)
-                        callback();
+                          });
+                          
+                      });
+                      Promise.all(promiseArr)
+                      .then(resolve_request())
+                      .catch(reject_request());
+                    });
+                  
+                });
+                Promise.all(promiseRequestArr)
+                .then(callback(true))
+                .catch(callback(true))
+                    
               });
-
-// dbPromise.then(db => {
-//             return db.transaction('obj')
-//                 .objectStore('obj')})
-// .then(function(objectStore){
-//   return objectStore.openCursor();
-// })
-// .then(function(reqCursor){
-//   return reqCursor.continue();})
-// .then(function(event){
- 
-
-    //let cursor = event.target.result;
-      //if(cursor) {
-        // console.log('Cursor:' + event);
-        // cursor.key contains the key of the current record being iterated through
-        // note that there is no cursor.value, unlike for openCursor
-        // this is where you'd do something with the result
-      //   cursor.continue();
-      // } else {
-      //   console.log('finished running with cursor:');
-      //   // no more results
-      // }
-      // callback();
-    // });
-}
-  
-
-
-
-
-
-
-    //     let cursor = event.target.result;
-    //     if(cursor) {
-    //       console.log('Cursor:' + cursor.value);
-    //       // cursor.key contains the key of the current record being iterated through
-    //       // note that there is no cursor.value, unlike for openCursor
-    //       // this is where you'd do something with the result
-    //       cursor.continue();
-    //     } else {
-    //       console.log('finished running with cursor:');
-    //       // no more results
-    //     }
-    //     callback();
-    //   }
-    // });
-
-
-
-    // dbPromise.then(db => {
-    //   let transaction = db.transaction('obj', 'readonly');
-    //   let objectStore = transaction.objectStore('obj');
-    //   let reqCursor = objectStore.openCursor();
-    //   reqCursor.onsuccess = function(event) {
-    //     let cursor = event.target.result;
-    //     if(cursor) {
-    //       console.log('Cursor:' + cursor.value);
-    //       // cursor.key contains the key of the current record being iterated through
-    //       // note that there is no cursor.value, unlike for openCursor
-    //       // this is where you'd do something with the result
-    //       cursor.continue();
-    //     } else {
-    //       console.log('finished running with cursor:');
-    //       // no more results
-    //     }
-        
-    //   };
-    // });
-    
- 
-
-
+            }
 
 
 
@@ -631,6 +586,7 @@ class DBHelper {
         const restaurant = restaurants.find(r => r.id == id);
         if (restaurant) { // Got the restaurant
 
+          console.log ('fetchRestaurantById --> before fetchReviewByRestaurantId');
           //fetch more data on the specific restaurant
           DBHelper.fetchReviewByRestaurantId(id, (reviews, error) => {
             if (error){
@@ -646,7 +602,7 @@ class DBHelper {
                 restaurant.reviews.push(reviews);
               }
 
-              console.log('added reviews to restaurant #'+id+': ' + reviews);
+              console.log('added reviews to restaurant #'+id+': ' + reviews.length);
               callback(restaurant, null);
             }
           });
