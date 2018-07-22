@@ -214,6 +214,17 @@ nav h1 a {
   text-decoration: none;
   text-transform: uppercase;
 }
+#restaurants-list li input {
+  font-size: 10pt;
+  margin: 0 0 0 230px;
+  height: 22px;
+  width: 22px;
+}
+#restaurants-list li label {
+  font-size: 14pt;
+  font-weight: 200;
+}
+
 
 /* ====================== Restaurant Details ====================== */
 .inside header {

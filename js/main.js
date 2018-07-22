@@ -184,6 +184,22 @@ createRestaurantHTML = (restaurant) => {
   more.setAttribute("aria-label", "View details of " + restaurant.name +" restaurant");
   more.href = DBHelper.urlForRestaurant(restaurant);
   li.append(more)
+  
+  const favorite = document.createElement('input');
+  favorite.type = "checkbox";
+  favorite.id = 'favorite_checkbox';
+  favorite.checked = restaurant.is_favorite.toUpperCase() == "TRUE";
+  favorite.setAttribute("aria-label", "Favorite indicator for"  + restaurant.name);
+  favorite.addEventListener("click", function () {
+    DBHelper.toggleFavorite(restaurant.id, this.checked);
+  });
+  const favorite_label = document.createElement('label');
+  favorite_label.innerHTML = "Favorite!";
+  favorite_label.for = 'favorite_checkbox';
+
+
+  li.append(favorite);
+  li.append(favorite_label);
 
   return li
 }

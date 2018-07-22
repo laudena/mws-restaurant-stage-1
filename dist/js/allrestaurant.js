@@ -356,6 +356,7 @@ class DBHelper {
     //return 'Not yet! (waiting for network)'
     return '1970-01-01T00:00:00.0Z';
   }
+
   /**
    * Fetch all restaurants.
    */
@@ -368,7 +369,7 @@ class DBHelper {
       .then(function(myJson) { 
         console.log ('myJson' + myJson);
         DBHelper.addRestaurantRecordsToDB(myJson);
-        return myJson;
+        return myJson.sort(DBHelper.compareFavorites);
       })
       .then(callback)
       .catch(function (e) {
@@ -387,6 +388,23 @@ class DBHelper {
       
   }
  
+
+/* compareFavorites - sort restaurants
+
+make good use of the favorite feature - 
+  reorder the restaurant, so the most favorites ones are on top! */
+
+static compareFavorites(a,b) {
+  if (a.is_favorite == "true" && b.is_favorite != "true")
+    return -1;
+  if (a.is_favorite != "true" && b.is_favorite == "true")
+    return 1;
+  return 0;
+}
+
+
+
+
  static fetchReviewByRestaurantId(restaurant_id, callback) {
     
 
@@ -468,16 +486,6 @@ class DBHelper {
             return null;
       });
 
-
-
-  // dbPromise.then(db => {
-  //   const tx = db.transaction('obj', 'readwrite');
-  //   tx.objectStore('obj').put({
-  //     id: restaurant_id,
-  //     data: obj
-  //     });
-  //     return tx.complete;
-  // });
   }
   static addNewReview(payload_data, addToDBWhenFailed, callback)
   {
@@ -762,6 +770,19 @@ class DBHelper {
     return marker;
   }
 
+  static toggleFavorite(restaurant_id, value){
+    //http://localhost:1337/restaurants/9/?is_favorite=true
+    let url = DBHelper.DATABASE_URL + "/"+restaurant_id+"/?is_favorite=" + value;
+      let fetchOptions = {
+        method: "PUT"
+        }
+ 
+       fetch(url, fetchOptions)
+         .then(function(response){
+          console.log("toggleFavorite --> post outcome:" + response.statusText);
+           return response;
+         });
+  }
 }
 
 let restaurant;
