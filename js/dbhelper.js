@@ -21,19 +21,21 @@ class DBHelper {
    * Change this to restaurants.json file location on your server.
    */
    static get PORT(){
-    return 1337;
+    return 80;
    }
   static get DATABASE_URL() {
     //const port = 1337 // Change this to your server port
-    return `http://localhost:${DBHelper.PORT}/restaurants`;
+
+    //return `http://localhost:${DBHelper.PORT}/restaurants`;
+    return `https://lauden-res-server.herokuapp.com/restaurants`;
   }
 
   static get REVIEWS_URL() {
-    return `http://localhost:${DBHelper.PORT}/reviews/?restaurant_id=`;
+    return `https://lauden-res-server.herokuapp.com/reviews/?restaurant_id=`;
 
   }
   static get ADD_REVIEW_URL(){
-    return `http://localhost:${DBHelper.PORT}/reviews/`;
+    return `https://lauden-res-server.herokuapp.com/reviews/`;
   }
 
   static get NOT_UPDATED_YET_DATE(){

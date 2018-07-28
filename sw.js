@@ -15,7 +15,7 @@ self.addEventListener('install', function(event) {
         '/index.html',
         '/restaurant.html',
         //'/data/restaurants.json',
-        'http://localhost:1337/restaurants'
+        'https://lauden-res-server.herokuapp.com/restaurants'
       ]);
     })
   );
